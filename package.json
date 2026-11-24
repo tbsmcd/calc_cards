@@ -1,0 +1,9 @@
+{
+  "name": "calc-cards",
+  "version": "1.0.0",
+  "private": true,
+  "description": "小1向け 計算カード（静的Webアプリ）",
+  "scripts": {
+    "test": "node --test"
+  }
+}
