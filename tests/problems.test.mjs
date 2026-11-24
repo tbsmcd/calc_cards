@@ -13,7 +13,7 @@ test('セットが 5 つあり、問題数が出典どおり', () => {
   assert.equal(rows('sub10').length, 45);
   assert.equal(rows('add-carry').length, 36);
   assert.equal(rows('sub-borrow').length, 36);
-  assert.equal(rows('kuku').length, 90);
+  assert.equal(rows('kuku').length, 81);
 });
 
 test('すべての式の答えが正しく、重複がない', () => {
@@ -59,13 +59,19 @@ test('くりさがりのあるひきざん: 11〜18 から 一の位が足りな
   assert.equal(n, 36);
 });
 
-test('九九: 1〜9 のだん × 1〜10、順番は だん → かける数', () => {
+test('九九: 1〜9 のだん × 1〜9（×10 は含まない）、各だん 9 問、順番は だん → かける数', () => {
   const k = rows('kuku');
-  k.forEach(([a, op, b], i) => {
+  assert.equal(k.length, 81);
+  k.forEach(([a, op, b, r], i) => {
     assert.equal(op, '×');
-    assert.equal(a, Math.floor(i / 10) + 1);
-    assert.equal(b, (i % 10) + 1);
+    assert.equal(a, Math.floor(i / 9) + 1);
+    assert.equal(b, (i % 9) + 1);
+    assert.equal(r, a * b);
   });
+  assert.ok(k.every(([a, , b]) => a <= 9 && b <= 9), '×10 を含む');
+  for (let dan = 1; dan <= 9; dan++) assert.equal(k.filter(([a]) => a === dan).length, 9, `${dan}のだん`);
+  assert.ok(!keys('kuku').some((x) => x.endsWith('×10')));
+  assert.equal(Math.max(...k.map((p) => p[3])), 81);
 });
 
 test('答えは最大 2 けた', () => {

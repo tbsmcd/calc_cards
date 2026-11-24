@@ -38,10 +38,10 @@ test('buildQueue: ランダムは同じ問題を過不足なく含む', () => {
 
 test('buildQueue: 九九のだん指定と ぜんぶ', () => {
   const q7 = buildQueue('kuku', { mode: 'order', dan: 7 });
-  assert.equal(q7.length, 10);
+  assert.equal(q7.length, 9);
   assert.ok(q7.every((p) => p.a === 7));
-  assert.equal(buildQueue('kuku', { mode: 'order', dan: 'all' }).length, 90);
-  assert.equal(buildQueue('kuku', { mode: 'random', dan: 3, rng: seeded(3) }).length, 10);
+  assert.equal(buildQueue('kuku', { mode: 'order', dan: 'all' }).length, 81);
+  assert.equal(buildQueue('kuku', { mode: 'random', dan: 3, rng: seeded(3) }).length, 9);
   // 九九以外では dan は無視される
   assert.equal(buildQueue('add10', { dan: 3 }).length, 45);
 });
@@ -52,8 +52,8 @@ test('buildQueue: 未知のセットはエラー', () => {
 
 test('filterByDan', () => {
   const all = SETS.kuku.problems.map(toProblem);
-  assert.equal(filterByDan(all, null).length, 90);
-  assert.equal(filterByDan(all, 9).length, 10);
+  assert.equal(filterByDan(all, null).length, 81);
+  assert.equal(filterByDan(all, 9).length, 9);
 });
 
 test('isCorrect', () => {
@@ -157,7 +157,7 @@ test('formatSeconds と formatTime の丸めがそろう（0.1 秒の切り捨�
 
 test('九九のだんを文字列 "7" で渡しても絞り込める（app.js は文字列で渡す）', () => {
   const q = buildQueue('kuku', { mode: 'order', dan: '7' });
-  assert.equal(q.length, 10);
+  assert.equal(q.length, 9);
   assert.ok(q.every((p) => p.a === 7));
-  assert.equal(filterByDan(SETS.kuku.problems.map(toProblem), '3').length, 10);
+  assert.equal(filterByDan(SETS.kuku.problems.map(toProblem), '3').length, 9);
 });
