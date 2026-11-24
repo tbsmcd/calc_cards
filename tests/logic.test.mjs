@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { loadCalcCards } from './load.mjs';
-const { shuffle, buildQueue, filterByDan, isCorrect, pressDigit, backspace, Session, formatTime, toProblem, solvedText, SETS } = loadCalcCards();
+const { shuffle, buildQueue, filterByDan, isCorrect, pressDigit, backspace, Session, formatTime, formatSeconds, minUnit, toProblem, solvedText, SETS } = loadCalcCards();
 
 // 決まった乱数列（テストを再現可能にする）
 function seeded(seed) {
@@ -137,4 +137,27 @@ test('formatTime', () => {
   assert.equal(formatTime(0), '0.0びょう');
   assert.equal(formatTime(5230), '5.2びょう');
   assert.equal(formatTime(65400), '1ぷん 5.4びょう');
+});
+
+test('formatTime: 分の読み（ふん / ぷん）', () => {
+  const expected = { 1: 'ぷん', 2: 'ふん', 3: 'ぷん', 4: 'ぷん', 5: 'ふん', 6: 'ぷん', 7: 'ふん', 8: 'ぷん', 9: 'ふん', 10: 'ぷん', 12: 'ふん', 15: 'ふん' };
+  for (const [m, u] of Object.entries(expected)) assert.equal(minUnit(Number(m)), u, `${m}`);
+  assert.equal(formatTime(125000), '2ふん 5.0びょう');
+  assert.equal(formatTime(60000), '1ぷん 0.0びょう');
+  assert.equal(formatTime(300000 + 1234), '5ふん 1.2びょう');
+});
+
+test('formatSeconds と formatTime の丸めがそろう（0.1 秒の切り捨て）', () => {
+  assert.equal(formatSeconds(1999), '1.9');
+  assert.equal(formatSeconds(125300), '125.3');
+  assert.equal(formatSeconds(-5), '0.0');
+  assert.equal(formatTime(1999), '1.9びょう');
+  assert.equal(formatTime(59999), '59.9びょう');
+});
+
+test('九九のだんを文字列 "7" で渡しても絞り込める（app.js は文字列で渡す）', () => {
+  const q = buildQueue('kuku', { mode: 'order', dan: '7' });
+  assert.equal(q.length, 10);
+  assert.ok(q.every((p) => p.a === 7));
+  assert.equal(filterByDan(SETS.kuku.problems.map(toProblem), '3').length, 10);
 });

@@ -95,11 +95,20 @@ class Session {
 
 /** ms → 「1ぷん 05びょう」形式の表示用文字列（びょうは小数 1 けた）。 */
 function formatTime(ms) {
-  const totalSec = Math.floor(ms / 100) / 10;
-  const min = Math.floor(totalSec / 60);
-  const sec = totalSec - min * 60;
-  const secStr = sec.toFixed(1);
-  return min > 0 ? `${min}ぷん ${secStr}びょう` : `${secStr}びょう`;
+  const tenths = Math.floor(Math.max(0, ms) / 100); // 0.1 秒の切り捨て
+  const min = Math.floor(tenths / 600);
+  const secStr = ((tenths % 600) / 10).toFixed(1);
+  return min > 0 ? `${min}${minUnit(min)} ${secStr}びょう` : `${secStr}びょう`;
+}
+
+/** 問題画面のタイマー用: 秒だけ（0.1 秒の切り捨て）。formatTime と丸めをそろえる。 */
+function formatSeconds(ms) {
+  return (Math.floor(Math.max(0, ms) / 100) / 10).toFixed(1);
+}
+
+/** 「ふん」「ぷん」の読み分け。一の位が 2・5・7・9 なら「ふん」、それ以外は「ぷん」（1ぷん 2ふん 10ぷん）。 */
+function minUnit(min) {
+  return [2, 5, 7, 9].includes(min % 10) ? 'ふん' : 'ぷん';
 }
 
 /** 結果画面用の「N もん中 M もん できた」文言。全問なら「ぜんぶ できた！」。 */
@@ -109,6 +118,6 @@ function solvedText(solved, total) {
 
 g.CalcCards = Object.assign(g.CalcCards, {
   MAX_DIGITS, shuffle, toProblem, filterByDan, buildQueue, isCorrect,
-  pressDigit, backspace, Session, formatTime, solvedText,
+  pressDigit, backspace, Session, formatTime, formatSeconds, minUnit, solvedText,
 });
 })(globalThis);

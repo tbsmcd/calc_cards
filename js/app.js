@@ -1,6 +1,6 @@
 // 画面制御（DOM 担当）。出題ロジックは logic.js に分離。classic script（problems.js → logic.js の後に読む）。
 (function () {
-const { SETS, buildQueue, Session, pressDigit, backspace, formatTime, solvedText } = window.CalcCards;
+const { SETS, buildQueue, Session, pressDigit, backspace, formatTime, formatSeconds, solvedText } = window.CalcCards;
 
 const $ = (id) => document.getElementById(id);
 const screens = ['menu', 'dan', 'mode', 'ready', 'play', 'result'];
@@ -13,7 +13,12 @@ let timerId = null;
 
 const HEADINGS = { menu: 't-menu', dan: 't-dan', mode: 't-mode', ready: 't-ready', result: 't-result' };
 
+// 画面を切り替えた直後の押しまちがい（連打・二度押し）を防ぐ
+const GUARD_MS = 400;
+let shownAt = 0;
+
 function show(name) {
+  shownAt = performance.now();
   for (const s of screens) $(`screen-${s}`).hidden = s !== name;
   // 画面を変えたら見出しへフォーカス（読み上げ・キーボード操作のため）。問題画面はキーパッドを使うので対象外
   const h = HEADINGS[name] && $(HEADINGS[name]);
@@ -54,7 +59,7 @@ function start() {
   $('timer').textContent = '0.0';
   stopTimer();
   timerId = setInterval(() => {
-    $('timer').textContent = (session.elapsedMs(performance.now()) / 1000).toFixed(1);
+    $('timer').textContent = formatSeconds(session.elapsedMs(performance.now()));
   }, 100);
 }
 
@@ -119,6 +124,7 @@ document.addEventListener('click', (e) => {
   const b = e.target.closest('button');
   if (!b) return;
   b.blur(); // Space / Enter での二重入力を防ぐ
+  if (performance.now() - shownAt < GUARD_MS) return; // 画面が変わった直後は無視
   if (b.dataset.set) chooseSet(b.dataset.set);
   else if (b.dataset.dan) { choice.dan = b.dataset.dan; toMode(); }
   else if (b.dataset.mode) chooseMode(b.dataset.mode);
@@ -140,7 +146,11 @@ document.addEventListener('gesturestart', (e) => e.preventDefault());
 // 物理キーボード（あれば）
 document.addEventListener('keydown', (e) => {
   if ($('screen-play').hidden) return;
-  if (/^[0-9]$/.test(e.key)) press(e.key);
+  if (e.ctrlKey || e.altKey || e.metaKey) return; // Ctrl+1（タブ切り替え）などは無視
+  // 日本語入力オンのときは e.key が 'Process' になるので、キーの位置（e.code）から数字を読む
+  const m = /^(?:Digit|Numpad)([0-9])$/.exec(e.code || '') || /^([0-9])$/.exec(e.key);
+  if (m) { e.preventDefault(); press(m[1]); }
+  else if (e.isComposing) return;
   else if (e.key === 'Enter') { e.preventDefault(); press('enter'); }
   else if (e.key === 'Backspace' || e.key === 'Delete') { e.preventDefault(); press('back'); }
 });

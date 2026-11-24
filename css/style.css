@@ -78,7 +78,6 @@ h1 { margin: 0; font-size: clamp(2rem, 7vw, 3.6rem); }
   background: #fff; border: .25rem solid var(--blue); border-radius: var(--radius);
 }
 .answer.wrong { border-color: var(--red); background: #ffe3e3; color: var(--red); animation: shake .4s; }
-.answer.cursor:empty::after { content: "\00a0"; }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-.6rem); } 40% { transform: translateX(.6rem); }
@@ -132,7 +131,15 @@ h1:focus { outline: none; }
   }
   .keypad .fn { font-size: clamp(1rem, 6vh, 1.5rem); font-size: clamp(1rem, 6dvh, 1.5rem); }
   .big { min-height: 4rem; }
-  .result { gap: .5rem; }
+  /* 結果画面: 3 つの数字を横に並べ、ボタンと合わせて 1 画面に収める */
+  #screen-result { gap: .4rem; }
+  #screen-result h1 { font-size: clamp(1.6rem, 9vh, 2.6rem); }
+  .result { grid-template-columns: 1.35fr 1.5fr .9fr; width: min(100%, 900px); gap: .4rem; }
+  .result > div { padding: .3rem .5rem; }
+  #screen-result .result dt { font-size: clamp(.8rem, 4vh, 1.1rem); }
+  #screen-result .result dd { font-size: clamp(1.2rem, 7vh, 2.2rem); white-space: nowrap; }
+  #screen-result #r-solved { font-size: clamp(1rem, 5vh, 1.6rem); }
+  #screen-result .big { min-height: 3.4rem; font-size: clamp(1.3rem, 8vh, 2rem); }
 }
 /* タブレット横・ひろい画面 */
 @media (orientation: landscape) and (min-height: 601px) {
