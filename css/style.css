@@ -1,0 +1,148 @@
+:root {
+  --bg: #fff8e7;
+  --ink: #3b2f2f;
+  --accent: #ff8a3d;
+  --accent-dark: #d96a1f;
+  --blue: #3d8bff;
+  --green: #35b36b;
+  --red: #e5484d;
+  --card: #ffffff;
+  --radius: 1.2rem;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; height: 100%;
+  background: var(--bg); color: var(--ink);
+  font-family: "Hiragino Maru Gothic ProN", "BIZ UDPGothic", "Yu Gothic", "Meiryo", system-ui, sans-serif;
+  touch-action: manipulation;
+  -webkit-user-select: none; user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+body { height: 100vh; height: 100dvh; padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left); }
+#app { height: 100%; max-width: 1100px; margin: 0 auto; }
+[hidden] { display: none !important; }
+button { font: inherit; color: inherit; touch-action: manipulation; cursor: pointer; border: 0; }
+button:focus-visible { outline: 4px solid var(--blue); outline-offset: 2px; }
+
+.screen {
+  height: 100%; display: flex; flex-direction: column; align-items: center;
+  gap: clamp(.6rem, 2.5vh, 1.5rem); gap: clamp(.6rem, 2.5dvh, 1.5rem);
+  padding: 1rem; text-align: center; overflow-y: auto;
+}
+/* 安全な中央寄せ: 余白があるときだけ上下に auto マージンで中央、足りないときは上からスクロール */
+.screen > :first-child { margin-top: auto; }
+.screen > :last-child { margin-bottom: auto; }
+h1 { margin: 0; font-size: clamp(2rem, 7vw, 3.6rem); }
+.lead { margin: 0; font-size: clamp(1.2rem, 4vw, 1.9rem); }
+
+.grid {
+  width: min(100%, 720px);
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(.6rem, 2vw, 1.1rem);
+}
+.dan-grid { grid-template-columns: repeat(3, 1fr); }
+.wide { grid-column: 1 / -1; }
+.big {
+  min-height: clamp(4.5rem, 12vh, 7rem);
+  min-height: clamp(4.5rem, 12dvh, 7rem);
+  background: var(--card); border-radius: var(--radius);
+  box-shadow: 0 .35rem 0 #e6d3a8; font-size: clamp(1.6rem, 5.5vw, 2.6rem); font-weight: 700;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15em;
+  padding: .4rem;
+}
+.big small { font-size: .55em; color: var(--accent-dark); }
+.big:active { transform: translateY(.25rem); box-shadow: 0 .1rem 0 #e6d3a8; }
+.back { background: none; font-size: 1.3rem; padding: .8rem 1.2rem; text-decoration: underline; }
+.start {
+  background: var(--green); color: #fff; font-size: clamp(2.2rem, 8vw, 3.6rem); font-weight: 800;
+  padding: .6em 1.6em; border-radius: 999px; box-shadow: 0 .4rem 0 #23844d;
+}
+.start:active { transform: translateY(.3rem); box-shadow: 0 .1rem 0 #23844d; }
+
+/* もんだい画面 */
+.play { gap: .5rem; padding: .6rem; }
+.play > :first-child { margin-top: 0; }
+.play > :last-child { margin-bottom: 0; }
+.bar { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.quit { background: #fff; border-radius: .8rem; padding: .6rem 1rem; font-size: 1.1rem; box-shadow: 0 .2rem 0 #e6d3a8; }
+.progress { font-size: 1.3rem; font-weight: 700; }
+.timer { font-size: 1.5rem; font-variant-numeric: tabular-nums; min-width: 4.5em; text-align: right; }
+.question {
+  font-size: clamp(3rem, 14vw, 6.5rem); font-weight: 800; letter-spacing: .04em;
+  font-variant-numeric: tabular-nums; margin-top: clamp(0rem, 1vh, 1rem); white-space: nowrap;
+}
+.answer {
+  width: min(70%, 14rem); min-height: 1.4em; padding: .1em .3em;
+  font-size: clamp(3rem, 12vw, 5.5rem); font-weight: 800; font-variant-numeric: tabular-nums;
+  background: #fff; border: .25rem solid var(--blue); border-radius: var(--radius);
+}
+.answer.wrong { border-color: var(--red); background: #ffe3e3; color: var(--red); animation: shake .4s; }
+.answer.cursor:empty::after { content: "\00a0"; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-.6rem); } 40% { transform: translateX(.6rem); }
+  60% { transform: translateX(-.4rem); } 80% { transform: translateX(.4rem); }
+}
+.hint { min-height: 1.5em; font-size: clamp(1.3rem, 5vw, 2rem); font-weight: 700; color: var(--red); }
+h1:focus { outline: none; }
+@media (prefers-reduced-motion: reduce) { .answer.wrong { animation: none; } }
+
+.keypad {
+  width: min(100%, 560px); flex: 1 1 auto; min-height: 0; margin-top: auto;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-auto-rows: 1fr; gap: clamp(.4rem, 1.5vw, .8rem);
+  max-height: 55vh;
+  max-height: 55dvh;
+}
+.keypad button {
+  min-height: 3.6rem; background: var(--card); border-radius: var(--radius);
+  box-shadow: 0 .3rem 0 #e6d3a8; font-size: clamp(2rem, 8vw, 3.2rem); font-weight: 800;
+}
+.keypad button:active { transform: translateY(.2rem); box-shadow: 0 .1rem 0 #e6d3a8; }
+.keypad .fn { font-size: clamp(1.2rem, 4.5vw, 1.8rem); background: #ffe9b8; white-space: nowrap; }
+.keypad .ok { background: var(--accent); color: #fff; box-shadow: 0 .3rem 0 var(--accent-dark); }
+
+/* けっか */
+.result { margin: 0; display: grid; gap: 1rem; width: min(100%, 520px); }
+.result > div { background: #fff; border-radius: var(--radius); padding: .8rem 1rem; }
+.result dt { font-size: 1.3rem; }
+.result dd { margin: .2rem 0 0; font-size: clamp(2.2rem, 9vw, 3.6rem); font-weight: 800; color: var(--accent-dark); }
+#r-solved { font-size: clamp(1.5rem, 6vw, 2.6rem); }
+
+/* スマホ横・ひくい画面: キーパッドを右に出す。文字サイズは幅ではなく高さ基準にする */
+@media (orientation: landscape) and (max-height: 600px) {
+  .play {
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(0, 1fr) minmax(0, 1fr);
+    gap: .3rem .8rem; align-content: stretch; min-height: 0; overflow: hidden; padding: .4rem .6rem;
+  }
+  .bar { grid-column: 1 / -1; }
+  .quit { padding: .25rem .8rem; font-size: 1rem; }
+  .progress { font-size: 1.1rem; }
+  .timer { font-size: 1.2rem; }
+  .question { grid-column: 1; grid-row: 2; align-self: end; margin: 0; font-size: clamp(2.5rem, 16vh, 5rem); font-size: clamp(2.5rem, 16dvh, 5rem); }
+  .answer { grid-column: 1; grid-row: 3; justify-self: center; align-self: start; font-size: clamp(2.2rem, 13vh, 4.5rem); font-size: clamp(2.2rem, 13dvh, 4.5rem); }
+  .hint { grid-column: 1; grid-row: 3; align-self: end; justify-self: center; font-size: 1.1rem; }
+  .keypad {
+    grid-column: 2; grid-row: 2 / 4; align-self: stretch; max-height: none; margin: 0; width: 100%; min-height: 0;
+    grid-template-rows: repeat(4, minmax(0, 1fr)); gap: .3rem;
+  }
+  .keypad button {
+    min-height: 0; padding: 0; line-height: 1; white-space: nowrap;
+    font-size: clamp(1.4rem, 9vh, 2.4rem); font-size: clamp(1.4rem, 9dvh, 2.4rem);
+  }
+  .keypad .fn { font-size: clamp(1rem, 6vh, 1.5rem); font-size: clamp(1rem, 6dvh, 1.5rem); }
+  .big { min-height: 4rem; }
+  .result { gap: .5rem; }
+}
+/* タブレット横・ひろい画面 */
+@media (orientation: landscape) and (min-height: 601px) {
+  .keypad { max-height: 50vh; max-height: 50dvh; }
+}
+/* 結果画面: 高さが足りない画面（タブレット横など）では余白と文字を詰めて 1 画面に収める */
+@media (max-height: 820px) {
+  #screen-result { gap: .6rem; }
+  .result { gap: .5rem; }
+  .result > div { padding: .5rem 1rem; }
+  .result dd { font-size: clamp(2rem, 7vh, 3.2rem); font-size: clamp(2rem, 7dvh, 3.2rem); }
+  #screen-result .big { min-height: 4.2rem; }
+}

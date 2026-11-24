@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>けいさんカード</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main id="app">
+
+  <!-- 1. メニュー -->
+  <section id="screen-menu" class="screen" aria-labelledby="t-menu">
+    <h1 id="t-menu" tabindex="-1">けいさんカード</h1>
+    <p class="lead">どれを れんしゅう する？</p>
+    <div class="grid">
+      <button class="big" data-set="add10">たしざん<small>10まで</small></button>
+      <button class="big" data-set="sub10">ひきざん<small>10まで</small></button>
+      <button class="big" data-set="add-carry">たしざん<small>くりあがり</small></button>
+      <button class="big" data-set="sub-borrow">ひきざん<small>くりさがり</small></button>
+      <button class="big wide" data-set="kuku">くく</button>
+    </div>
+  </section>
+
+  <!-- 2. 九九のだん選択 -->
+  <section id="screen-dan" class="screen" hidden aria-labelledby="t-dan">
+    <h1 id="t-dan" tabindex="-1">なんのだん？</h1>
+    <div class="grid dan-grid">
+      <button class="big" data-dan="1">1のだん</button>
+      <button class="big" data-dan="2">2のだん</button>
+      <button class="big" data-dan="3">3のだん</button>
+      <button class="big" data-dan="4">4のだん</button>
+      <button class="big" data-dan="5">5のだん</button>
+      <button class="big" data-dan="6">6のだん</button>
+      <button class="big" data-dan="7">7のだん</button>
+      <button class="big" data-dan="8">8のだん</button>
+      <button class="big" data-dan="9">9のだん</button>
+      <button class="big wide" data-dan="all">ぜんぶ</button>
+    </div>
+    <button class="back" data-go="menu">← もどる</button>
+  </section>
+
+  <!-- 3. じゅんばん / ランダム -->
+  <section id="screen-mode" class="screen" hidden aria-labelledby="t-mode">
+    <h1 id="t-mode" tabindex="-1">どっちで やる？</h1>
+    <p class="lead" id="mode-summary"></p>
+    <div class="grid">
+      <button class="big" data-mode="order">じゅんばん</button>
+      <button class="big" data-mode="random">ランダム</button>
+    </div>
+    <button class="back" id="mode-back">← もどる</button>
+  </section>
+
+  <!-- 4. スタート待ち -->
+  <section id="screen-ready" class="screen" hidden aria-labelledby="t-ready">
+    <h1 id="t-ready" tabindex="-1">じゅんびは いい？</h1>
+    <p class="lead" id="ready-summary"></p>
+    <button class="start" id="btn-start">スタート</button>
+    <button class="back" id="ready-back">← もどる</button>
+  </section>
+
+  <!-- 5. 問題 -->
+  <section id="screen-play" class="screen play" hidden aria-label="もんだい">
+    <header class="bar">
+      <button class="quit" id="btn-quit">やめる</button>
+      <div class="progress" id="progress" aria-live="polite"></div>
+      <div class="timer" id="timer" aria-hidden="true">0.0</div>
+    </header>
+    <div class="question" id="question" aria-live="polite"></div>
+    <div class="answer" id="answer" role="status" aria-label="こたえ"></div>
+    <div class="hint" id="hint" aria-live="assertive"></div>
+    <div class="keypad" id="keypad">
+      <button data-key="7">7</button><button data-key="8">8</button><button data-key="9">9</button>
+      <button data-key="4">4</button><button data-key="5">5</button><button data-key="6">6</button>
+      <button data-key="1">1</button><button data-key="2">2</button><button data-key="3">3</button>
+      <button data-key="back" class="fn" aria-label="けす">けす</button>
+      <button data-key="0">0</button>
+      <button data-key="enter" class="fn ok">こたえる</button>
+    </div>
+  </section>
+
+  <!-- 6. けっか -->
+  <section id="screen-result" class="screen" hidden aria-labelledby="t-result">
+    <h1 id="t-result" tabindex="-1">よくできました！</h1>
+    <dl class="result">
+      <div><dt>かかった じかん</dt><dd id="r-time"></dd></div>
+      <div><dt>できた もんだい</dt><dd id="r-solved"></dd></div>
+      <div><dt>まちがえた かず</dt><dd id="r-miss"></dd></div>
+    </dl>
+    <div class="grid">
+      <button class="big" id="btn-again">もういちど</button>
+      <button class="big" id="btn-menu">メニューへ</button>
+    </div>
+  </section>
+
+</main>
+<!-- type="module" を使わない classic script（file:// で直接開いても動く）。順番が大事。 -->
+<script defer src="js/problems.js"></script>
+<script defer src="js/logic.js"></script>
+<script defer src="js/app.js"></script>
+</body>
+</html>
