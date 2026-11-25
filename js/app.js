@@ -17,8 +17,31 @@ const HEADINGS = { menu: 't-menu', dan: 't-dan', mode: 't-mode', ready: 't-ready
 const GUARD_MS = 400;
 let shownAt = 0;
 
+// 花丸は 1 つの要素を使い回す。次の正解で出し直すので、重ならず溜まらない。表示中も入力は止めない
+const HANAMARU_MS = 700;
+let hanamaruTimer = null;
+function hideHanamaru() {
+  clearTimeout(hanamaruTimer);
+  $('hanamaru').hidden = true;
+}
+function showHanamaru(anchor, size) {
+  const el = $('hanamaru');
+  const r = anchor.getBoundingClientRect();
+  hideHanamaru();
+  void el.offsetWidth; // hidden を挟んで再始動するため、いったん描画を確定させる
+  el.style.setProperty('--hm-size', `${size}px`);
+  el.style.left = `${r.left + r.width / 2}px`;
+  el.style.top = `${r.top + r.height / 2}px`;
+  el.hidden = false; // display:none から戻すので、アニメーションは最初から再生される
+  hanamaruTimer = setTimeout(hideHanamaru, HANAMARU_MS); // reduced-motion では静止表示のままなのでタイマーで消す
+}
+function hanamaruSize(ratio) {
+  return Math.round(Math.min(innerWidth, innerHeight) * ratio);
+}
+
 function show(name) {
   shownAt = performance.now();
+  hideHanamaru();
   for (const s of screens) $(`screen-${s}`).hidden = s !== name;
   // 画面を変えたら見出しへフォーカス（読み上げ・キーボード操作のため）。問題画面はキーパッドを使うので対象外
   const h = HEADINGS[name] && $(HEADINGS[name]);
@@ -89,8 +112,13 @@ function submit() {
   const r = session.submit(buf, performance.now());
   if (r.correct) {
     buf = '';
-    if (r.finished) return finish();
+    if (r.finished) {
+      finish();
+      showHanamaru($('app'), hanamaruSize(0.7)); // 切り替え後に出さないと隠れる。見出しは上端に近く欠けるので画面中央
+      return;
+    }
     renderQuestion();
+    showHanamaru($('question'), hanamaruSize(0.5));
   } else {
     // まちがい: 赤くゆらして、入力をクリア。同じ問題のまま。
     const el = $('answer');
