@@ -158,6 +158,7 @@ h1:focus { outline: none; }
 .hanamaru {
   position: fixed; z-index: 10; pointer-events: none; transform: translate(-50%, -50%);
   width: var(--hm-size, 16rem); height: var(--hm-size, 16rem);
+  opacity: .4;
 }
 .hanamaru svg { width: 100%; height: 100%; overflow: visible; animation: hm-out .65s ease-in forwards; }
 .hanamaru path {
