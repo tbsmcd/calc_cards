@@ -154,26 +154,13 @@ h1:focus { outline: none; }
   #screen-result .big { min-height: 4.2rem; }
 }
 
-/* 花丸: 全体 .65s。描き終わり後に少し拡大して消える */
+/* 花丸: 動かさず静止で出す（気が散らないように）。位置・大きさは JS が問題や見出しを避けて決める */
 .hanamaru {
-  position: fixed; z-index: 10; pointer-events: none; transform: translate(-50%, -50%);
-  width: var(--hm-size, 16rem); height: var(--hm-size, 16rem);
-  opacity: .4;
+  position: fixed; z-index: 10; pointer-events: none;
+  width: var(--hm-size, 5rem); height: var(--hm-size, 5rem);
+  opacity: .9;
 }
-.hanamaru svg { width: 100%; height: 100%; overflow: visible; animation: hm-out .65s ease-in forwards; }
+.hanamaru svg { width: 100%; height: 100%; overflow: visible; }
 .hanamaru path {
   fill: none; stroke: var(--red); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round;
-  stroke-dasharray: 1 2; stroke-dashoffset: 1.01;
-}
-.hm-spiral { animation: hm-draw .32s ease-out forwards; }
-.hm-petals { animation: hm-draw .3s ease-out .26s forwards; }
-@keyframes hm-draw { to { stroke-dashoffset: 0; } }
-@keyframes hm-out {
-  0%, 88% { opacity: 1; transform: scale(1) rotate(0); }
-  100% { opacity: 0; transform: scale(1.25) rotate(-4deg); }
-}
-/* 動きを抑える設定: 描かずに静止で出し、JS のタイマーで消す */
-@media (prefers-reduced-motion: reduce) {
-  .hanamaru svg, .hm-spiral, .hm-petals { animation: none; }
-  .hanamaru path { stroke-dashoffset: 0; }
 }

@@ -18,25 +18,37 @@ const GUARD_MS = 400;
 let shownAt = 0;
 
 // 花丸は 1 つの要素を使い回す。次の正解で出し直すので、重ならず溜まらない。表示中も入力は止めない
-const HANAMARU_MS = 700;
+const HANAMARU_MS = 800;
+const HANAMARU_MIN = 28;
 let hanamaruTimer = null;
 function hideHanamaru() {
   clearTimeout(hanamaruTimer);
   $('hanamaru').hidden = true;
 }
-function showHanamaru(anchor, size) {
-  const el = $('hanamaru');
-  const r = anchor.getBoundingClientRect();
-  hideHanamaru();
-  void el.offsetWidth; // hidden を挟んで再始動するため、いったん描画を確定させる
-  el.style.setProperty('--hm-size', `${size}px`);
-  el.style.left = `${r.left + r.width / 2}px`;
-  el.style.top = `${r.top + r.height / 2}px`;
-  el.hidden = false; // display:none から戻すので、アニメーションは最初から再生される
-  hanamaruTimer = setTimeout(hideHanamaru, HANAMARU_MS); // reduced-motion では静止表示のままなのでタイマーで消す
+function overlaps(x, y, s, r) {
+  return x < r.right && x + s > r.left && y < r.bottom && y + s > r.top;
 }
-function hanamaruSize(ratio) {
-  return Math.round(Math.min(innerWidth, innerHeight) * ratio);
+// 左上に置き、避けたい要素と交差するあいだ小さくする。画面ごとの余白の差を式で持たず、実測で重なりを避けるため
+function showHanamaru(x, y, avoidEls) {
+  const el = $('hanamaru');
+  const rects = avoidEls.map((e) => e.getBoundingClientRect()).filter((r) => r.width > 0 && r.height > 0);
+  let size = Math.round(Math.min(110, Math.max(70, Math.min(innerWidth, innerHeight) * 0.18)));
+  while (size > HANAMARU_MIN && rects.some((r) => overlaps(x, y, size, r))) size -= 2;
+  hideHanamaru();
+  el.style.setProperty('--hm-size', `${size}px`);
+  el.style.left = `${x}px`;
+  el.style.top = `${y}px`;
+  el.hidden = false;
+  hanamaruTimer = setTimeout(hideHanamaru, HANAMARU_MS);
+}
+function showHanamaruPlay() {
+  const q = $('btn-quit').getBoundingClientRect();
+  const ids = ['progress', 'timer', 'question', 'answer', 'hint', 'keypad'];
+  showHanamaru(q.left, q.bottom + 6, ids.map($));
+}
+function showHanamaruResult() {
+  const r = $('screen-result').getBoundingClientRect();
+  showHanamaru(r.left + 12, r.top + 12, [$('t-result'), document.querySelector('.result'), document.querySelector('#screen-result .grid')]);
 }
 
 function show(name) {
@@ -114,11 +126,11 @@ function submit() {
     buf = '';
     if (r.finished) {
       finish();
-      showHanamaru($('app'), hanamaruSize(0.7)); // 切り替え後に出さないと隠れる。見出しは上端に近く欠けるので画面中央
+      showHanamaruResult(); // 画面切り替えで消えるので、切り替え後に出す
       return;
     }
     renderQuestion();
-    showHanamaru($('question'), hanamaruSize(0.5));
+    showHanamaruPlay();
   } else {
     // まちがい: 赤くゆらして、入力をクリア。同じ問題のまま。
     const el = $('answer');
